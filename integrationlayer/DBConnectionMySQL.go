@@ -26,7 +26,6 @@ func Connect() {
 		if err != nil {
 			panic(err.Error())
 		}
-
 		connected = true
 	}
 }
@@ -73,9 +72,9 @@ func GetAllItems() []modellayer.Item {
         }
 		listOfItems = append(listOfItems, item)
     }
-	defer results.Close()
-	defer dbConnection.Close()
-
+	
+	results.Close()
+	disconnect()
 	return listOfItems
 }
 
@@ -86,12 +85,15 @@ func GetSingleItem(id int) modellayer.Item {
 	var item modellayer.Item
 	err := dbConnection.QueryRow("SELECT itemId, itemName, done FROM Item WHERE itemId = ?", id).Scan(&item.ItemId, &item.ItemName, &item.Done)
 
+	if err != nil && err.Error() == "sql: no rows in result set" {
+		return modellayer.Item{}
+	}
+
 	if err != nil {
 		panic(err.Error())
 	}
 
-	defer dbConnection.Close()
-
+	disconnect()
 	return item
 }
 
@@ -104,6 +106,11 @@ func performSimpleQuery(queryString string) {
 		panic(err.Error())
 	}
 
-	defer query.Close()
-	defer dbConnection.Close()
+	query.Close()
+	disconnect()
+}
+
+func disconnect() {
+	dbConnection.Close()
+	connected = false
 }
