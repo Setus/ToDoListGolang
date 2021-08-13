@@ -3,8 +3,10 @@ package integrationlayer
 import (
 	"database/sql"
 	"fmt"
-	"github.com/todolist/modellayer"
+	"sort"
+
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/todolist/modellayer"
 )
 
 var server string = "localhost"
@@ -75,6 +77,13 @@ func GetAllItems() []modellayer.Item {
 	
 	results.Close()
 	disconnect()
+
+	if len(listOfItems) > 1 {
+		sort.Slice(listOfItems, func(i int, j int) bool {
+			return listOfItems[i].ItemId < listOfItems[j].ItemId
+		})
+	}
+
 	return listOfItems
 }
 
