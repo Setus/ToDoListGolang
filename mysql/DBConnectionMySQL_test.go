@@ -1,4 +1,4 @@
-package integrationlayer
+package mysql
 
 import (
 	"fmt"

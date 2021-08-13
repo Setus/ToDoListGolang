@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/todolist/integrationlayer"
+	"github.com/todolist/mysql"
     "github.com/todolist/modellayer"
 )
 
@@ -37,7 +37,7 @@ func CreateApiEndpoints() {
 
 func getAll(c *gin.Context) {
     allowControll(c)
-    listOfItems := integrationlayer.GetAllItems();
+    listOfItems := mysql.GetAllItems();
     c.IndentedJSON(http.StatusOK, listOfItems)
 }
 
@@ -49,7 +49,7 @@ func create(c *gin.Context) {
         return
     }
 
-    integrationlayer.AddNewItem(newItem);
+    mysql.AddNewItem(newItem);
     c.IndentedJSON(http.StatusOK, newItem)
 }
 
@@ -61,7 +61,7 @@ func update(c *gin.Context) {
         return
     }
 
-    integrationlayer.UpdateItem(updatedItem);
+    mysql.UpdateItem(updatedItem);
     c.IndentedJSON(http.StatusOK, updatedItem)
 }
 
@@ -73,13 +73,13 @@ func delete(c *gin.Context) {
         return
     }
 
-    integrationlayer.DeleteItem(deletedItem);
+    mysql.DeleteItem(deletedItem);
     c.IndentedJSON(http.StatusOK, deletedItem)
 }
 
 func deleteAllDone(c *gin.Context) {
     allowControll(c)
-    integrationlayer.DeleteAllDoneItems();
+    mysql.DeleteAllDoneItems();
     c.IndentedJSON(http.StatusOK, "OK")
 }
 

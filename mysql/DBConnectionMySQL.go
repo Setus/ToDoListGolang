@@ -1,4 +1,4 @@
-package integrationlayer
+package mysql
 
 import (
 	"database/sql"
@@ -18,7 +18,7 @@ var password string = "abc123"
 var dbConnection *sql.DB
 var connected bool
 
-func Connect() {
+func connect() {
 	if !connected {
 		fmt.Println("Creating new connection")
 		var connectionString string = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", userName, password, server, port, databaseName)
@@ -58,7 +58,7 @@ func DeleteAllDoneItems() {
 func GetAllItems() []modellayer.Item {
 	fmt.Println("Getting all items")
 
-	Connect()
+	connect()
 	results, err := dbConnection.Query("SELECT itemId, itemName, done FROM Item")
 
 	if err != nil {
@@ -90,7 +90,7 @@ func GetAllItems() []modellayer.Item {
 func GetSingleItem(id int) modellayer.Item {
 	fmt.Println("Getting a single item")
 
-	Connect()
+	connect()
 	var item modellayer.Item
 	err := dbConnection.QueryRow("SELECT itemId, itemName, done FROM Item WHERE itemId = ?", id).Scan(&item.ItemId, &item.ItemName, &item.Done)
 
@@ -107,7 +107,7 @@ func GetSingleItem(id int) modellayer.Item {
 }
 
 func performSimpleQuery(queryString string) {
-	Connect()
+	connect()
 
 	query, err := dbConnection.Query(queryString)
 

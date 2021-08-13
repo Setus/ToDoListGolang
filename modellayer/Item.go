@@ -3,9 +3,9 @@ package modellayer
 import "fmt"
 
 type Item struct {
-	ItemId   int 	`json:"itemId"`
-	ItemName string `json:"itemName"`
-	Done     bool 	`json:"done"`
+	ItemId   int 	`json:"itemId" bson:"itemId"`
+	ItemName string `json:"itemName" bson:"itemName"`
+	Done     bool 	`json:"done" bson:"done"`
 }
 
 func (item Item) ToString() string {
@@ -37,8 +37,5 @@ func (item Item) Equals(itemToCompare Item) bool {
 }
 
 func (item Item) IsNull() bool {
-	if item.ItemName == "" {
-		return true
-	}
-	return false
+	return item.ItemName == ""
 }
