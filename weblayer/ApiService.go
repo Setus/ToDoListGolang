@@ -1,11 +1,13 @@
 package weblayer
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/todolist/mysql"
-    "github.com/todolist/modellayer"
+	"github.com/magiconair/properties"
+	"github.com/todolist/modellayer"
+	"github.com/todolist/servicelayer"
 )
 
 var baseUrl string = "api/item/"
@@ -16,6 +18,8 @@ var deleteUrl string = baseUrl + "delete"
 var deleteAllDoneUrl string = baseUrl + "deletealldone"
 
 func CreateApiEndpoints() {
+    servicelayer.InstantiateDatabase(readDatabaseSetting())
+    
     router := gin.Default()
 
     router.GET(getAllUrl, getAll)
@@ -37,7 +41,7 @@ func CreateApiEndpoints() {
 
 func getAll(c *gin.Context) {
     allowControll(c)
-    listOfItems := mysql.GetAllItems();
+    listOfItems := servicelayer.GetAllItems();
     c.IndentedJSON(http.StatusOK, listOfItems)
 }
 
@@ -49,7 +53,7 @@ func create(c *gin.Context) {
         return
     }
 
-    mysql.AddNewItem(newItem);
+    servicelayer.AddNewItem(newItem);
     c.IndentedJSON(http.StatusOK, newItem)
 }
 
@@ -61,7 +65,7 @@ func update(c *gin.Context) {
         return
     }
 
-    mysql.UpdateItem(updatedItem);
+    servicelayer.UpdateItem(updatedItem);
     c.IndentedJSON(http.StatusOK, updatedItem)
 }
 
@@ -73,19 +77,25 @@ func delete(c *gin.Context) {
         return
     }
 
-    mysql.DeleteItem(deletedItem);
+    servicelayer.DeleteItem(deletedItem);
     c.IndentedJSON(http.StatusOK, deletedItem)
 }
 
 func deleteAllDone(c *gin.Context) {
     allowControll(c)
-    mysql.DeleteAllDoneItems();
+    servicelayer.DeleteAllDoneItems();
     c.IndentedJSON(http.StatusOK, "OK")
 }
-
 
 func allowControll(c *gin.Context) {
     c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
     c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
     c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
+}
+
+func readDatabaseSetting() string {
+    p := properties.MustLoadFile("config.properties", properties.UTF8)
+	databaseType := p.MustGetString("DatabaseType")
+	fmt.Println("The databaseType is: " + databaseType)
+    return databaseType
 }

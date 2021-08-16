@@ -18,6 +18,8 @@ var password string = "abc123"
 var dbConnection *sql.DB
 var connected bool
 
+type Mysql struct {}
+
 func connect() {
 	if !connected {
 		fmt.Println("Creating new connection")
@@ -32,30 +34,30 @@ func connect() {
 	}
 }
 
-func AddNewItem(item modellayer.Item) {
+func (m Mysql) AddNewItem(item modellayer.Item) {
 	fmt.Println("Adding new item, " + item.ToString())
 	var insertString string = fmt.Sprintf("INSERT INTO Item VALUES ( '%d', '%s', '%d' )", item.ItemId, item.ItemName, item.GetDoneInt())
 	performSimpleQuery(insertString)
 }
 
-func UpdateItem(item modellayer.Item) {
+func (m Mysql) UpdateItem(item modellayer.Item) {
 	fmt.Println("Updating item, " + item.ToString())
 	var updateString string = fmt.Sprintf("UPDATE Item SET itemName = '%s', done = '%d' WHERE itemId = '%d'", item.ItemName, item.GetDoneInt(), item.ItemId)
 	performSimpleQuery(updateString)
 }
 
-func DeleteItem(item modellayer.Item) {
+func (m Mysql) DeleteItem(item modellayer.Item) {
 	fmt.Println("Deleting item, " + item.ToString())
 	var deleteString string = fmt.Sprintf("DELETE FROM Item WHERE itemId = '%d'", item.ItemId)
 	performSimpleQuery(deleteString)
 }
 
-func DeleteAllDoneItems() {
+func (m Mysql) DeleteAllDoneItems() {
 	fmt.Println("Deleting all done items")
 	performSimpleQuery("DELETE FROM Item WHERE done = 1")
 }
 
-func GetAllItems() []modellayer.Item {
+func (m Mysql) GetAllItems() []modellayer.Item {
 	fmt.Println("Getting all items")
 
 	connect()
@@ -87,7 +89,7 @@ func GetAllItems() []modellayer.Item {
 	return listOfItems
 }
 
-func GetSingleItem(id int) modellayer.Item {
+func (m Mysql) GetSingleItem(id int) modellayer.Item {
 	fmt.Println("Getting a single item")
 
 	connect()
